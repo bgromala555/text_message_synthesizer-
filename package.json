@@ -1,0 +1,21 @@
+{
+  "name": "messageviewerwwe-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.2",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsdoc": "^62.7.1",
+    "eslint-plugin-sonarjs": "^4.0.0",
+    "knip": "^5.85.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.7",
+    "typescript-eslint": "^8.56.1"
+  }
+}

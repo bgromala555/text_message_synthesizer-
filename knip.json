@@ -1,0 +1,28 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "static/app.ts",
+    "static/core/index.ts",
+    "static/core/api-client.ts",
+    "static/core/app-state.ts",
+    "static/core/dom-elements.ts",
+    "static/core/ui/chat-formatters.ts",
+    "static/core/ui/ui-manager.ts",
+    "static/features/graph/graph-manager.ts",
+    "static/features/ingest/ingest-manager.ts",
+    "static/features/ner/ner-manager.ts",
+    "static/features/period/period-picker.ts",
+    "static/features/questions/question-manager.ts",
+    "static/features/sessions/session-manager.ts",
+    "static/features/sidebar/sidebar-manager.ts",
+    "static/shared/auth/keycloak-config.ts",
+    "static/shared/types.ts"
+  ],
+  "project": ["static/**/*.ts"],
+  "ignore": ["static/**/*.js"],
+  "ignoreDependencies": [
+    "bootstrap",
+    "flatpickr",
+    "@types/flatpickr"
+  ]
+}

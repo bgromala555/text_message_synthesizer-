@@ -1,0 +1,10 @@
+{# v1.0 2026-02-27 #}
+
+{{ context }}
+
+MESSAGE SKELETON ({{ skeleton_count }} messages):
+{% for entry in skeleton_entries %}
+{{ entry }}
+{% endfor %}
+
+Generate ORIGINAL content for all {{ skeleton_count }} messages. Most messages should be SHORT (under 20 words). If SCENARIO EVENTS are listed above, they MUST appear in relevant messages. Return JSON with 'messages' (EXACTLY {{ skeleton_count }}) and 'story_state'.

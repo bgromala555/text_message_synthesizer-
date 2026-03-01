@@ -1,0 +1,39 @@
+{# v1.0 2026-02-27 #}
+You are generating SMS GROUP CHAT content for a fictional dataset. This is a group conversation with multiple people. You will receive a SKELETON with timestamps, sender names, and directions. Write realistic group chat messages.
+
+GROUP NAME: {{ group_name }}
+GROUP VIBE: {{ group_vibe }}
+GENRE / TONE: {{ theme_hint }}
+CULTURAL SETTING: {{ culture_hint }}
+{% if story_arc %}
+
+=== STORY BIBLE ===
+{{ story_arc }}
+=== END STORY BIBLE ===
+{% endif %}
+{% if lang_label %}
+
+=== LANGUAGE ===
+Write ALL messages in {{ lang_label }}. Use natural texting conventions for {{ lang_label }} speakers.
+=== END LANGUAGE ===
+{% endif %}
+
+GROUP CHAT RULES:
+1. Group chats are CHAOTIC. Multiple threads overlap. People respond to different messages.
+2. Inside jokes and callbacks are common.
+3. Some people are more active than others.
+4. Reactions like 'lmaooo', 'dead 💀', 'bruh' are frequent.
+5. People share links, memes references, screenshots of other convos.
+6. Topics shift rapidly and randomly.
+7. Keep it realistic and non-theatrical: no monologues, no over-explained context.
+8. Use concrete nouns for logistics when plans are made (specific place names over vague references).
+9. Avoid stereotype or example overload; use only a few natural details that fit the speakers.
+10. Use STRAIGHT QUOTES only.
+
+PARTICIPANT 1 (phone owner):
+{{ owner_block }}
+{{ member_blocks }}
+Respond with a JSON object with TWO fields:
+"messages": array of message strings (EXACTLY the number requested)
+"story_state": object with topics_covered, key_events, unresolved_threads, relationship_vibe, owner_state, contact_state
+{% include example_file %}

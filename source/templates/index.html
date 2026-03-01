@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synthesized Chat Generator</title>
+    <link rel="stylesheet" href="/static/style.css?v={{ cache_bust }}">
+    <script defer src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+</head>
+<body>
+<a href="#panel-devices" class="skip-link">Skip to main content</a>
+<div class="app-container">
+
+    <!-- Header -->
+    <header class="app-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <button id="hamburger-btn" class="hamburger-btn" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <h1>Synthesized Chat Generator</h1>
+        </div>
+        <div class="actions" style="display:flex;align-items:center;gap:8px;">
+            <button id="undo-btn" class="btn btn-icon btn-sm" title="Undo (Ctrl+Z)" disabled aria-label="Undo">&#x21A9;</button>
+            <button id="redo-btn" class="btn btn-icon btn-sm" title="Redo (Ctrl+Y)" disabled aria-label="Redo">&#x21AA;</button>
+            <div id="apikey-bar" style="display:flex;align-items:center;gap:6px;">
+                <span id="apikey-status" class="badge badge-orange" style="cursor:pointer;" title="Click to set API key">No API Key</span>
+                <div id="apikey-input-wrap" class="hidden" style="display:flex;gap:4px;">
+                    <input type="password" id="apikey-input" placeholder="sk-..." aria-label="OpenAI API Key" style="width:220px;font-size:12px;padding:5px 8px;">
+                    <button class="btn btn-primary btn-sm" id="btn-submit-apikey">Set</button>
+                </div>
+            </div>
+            <button class="btn btn-danger" id="btn-new-scenario">New</button>
+            <button class="btn" id="btn-save-scenario">Save</button>
+            <button class="btn btn-primary" id="btn-load-scenario">Load</button>
+        </div>
+    </header>
+
+    <!-- Tab bar -->
+    <main>
+    <nav class="tab-bar" role="tablist">
+        <button class="tab-btn active" data-tab="devices" role="tab" aria-selected="true" aria-controls="panel-devices" id="tab-devices" tabindex="0">Devices <span class="tab-status" id="tab-status-devices"></span></button>
+        <button class="tab-btn" data-tab="contacts" role="tab" aria-selected="false" aria-controls="panel-contacts" id="tab-contacts" tabindex="0">Contacts <span class="tab-status" id="tab-status-contacts"></span></button>
+        <button class="tab-btn" data-tab="personalities" role="tab" aria-selected="false" aria-controls="panel-personalities" id="tab-personalities" tabindex="0">Personalities <span class="tab-status" id="tab-status-personalities"></span></button>
+        <button class="tab-btn" data-tab="storyarc" role="tab" aria-selected="false" aria-controls="panel-storyarc" id="tab-storyarc" tabindex="0">Story Arc <span class="tab-status" id="tab-status-storyarc"></span></button>
+        <button class="tab-btn" data-tab="eventslinks" role="tab" aria-selected="false" aria-controls="panel-eventslinks" id="tab-eventslinks" tabindex="0">Events &amp; Links <span class="tab-status" id="tab-status-eventslinks"></span></button>
+        <button class="tab-btn" data-tab="generate" role="tab" aria-selected="false" aria-controls="panel-generate" id="tab-generate" tabindex="0">Generate <span class="tab-status" id="tab-status-generate"></span></button>
+    </nav>
+
+    <!-- ============================================================ -->
+    <!-- PANEL 1: DEVICES -->
+    <!-- ============================================================ -->
+    <section id="panel-devices" class="tab-panel active" role="tabpanel" aria-labelledby="tab-devices">
+        <div class="card" style="border-left:3px solid var(--purple);margin-bottom:16px;">
+            <div class="card-header">
+                <h3>Scenario Setup</h3>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;">
+                Pick a genre, culture, and language. These shape names, personalities, locations, and conversations.
+            </p>
+            <div class="row">
+                <div class="form-group" style="max-width:250px;">
+                    <label for="theme-select">Theme</label>
+                    <select id="theme-select">
+                        <option value="slice-of-life">Slice of Life</option>
+                        <option value="crime">Crime / Investigation</option>
+                        <option value="espionage">Espionage / Spy</option>
+                        <option value="romance">Romance / Drama</option>
+                        <option value="family-drama">Family Drama</option>
+                        <option value="college">College Life</option>
+                        <option value="corporate">Corporate / Business</option>
+                        <option value="thriller">Thriller / Suspense</option>
+                        <option value="comedy">Comedy / Sitcom</option>
+                    </select>
+                </div>
+                <div class="form-group" style="max-width:250px;">
+                    <label for="culture-select">Culture / Region</label>
+                    <select id="culture-select">
+                        <option value="american">American (US)</option>
+                        <option value="arab-gulf">Arab — Gulf States</option>
+                        <option value="arab-levant">Arab — Levant</option>
+                        <option value="arab-north-africa">Arab — North Africa</option>
+                        <option value="british">British (UK)</option>
+                        <option value="chinese">Chinese</option>
+                        <option value="french">French</option>
+                        <option value="indian">Indian</option>
+                        <option value="japanese">Japanese</option>
+                        <option value="korean">Korean</option>
+                        <option value="latin-american">Latin American</option>
+                        <option value="nigerian">Nigerian</option>
+                        <option value="russian">Russian</option>
+                        <option value="southeast-asian">Southeast Asian</option>
+                        <option value="turkish">Turkish</option>
+                        <option value="west-african">West African</option>
+                    </select>
+                </div>
+                <div class="form-group" style="max-width:220px;">
+                    <label for="scenario-language">Conversation Language</label>
+                    <select id="scenario-language">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="ar">Arabic</option>
+                        <option value="zh">Mandarin Chinese</option>
+                        <option value="fr">French</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Device Setup</h3>
+                <div>
+                    <button class="btn btn-primary" id="btn-add-device">+ Add Device</button>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
+                Define phones/devices for your scenario. Each device has an owner and a set of contacts.
+            </p>
+            <div id="devices-list"></div>
+            <div id="devices-empty" class="empty-state">
+                <p>No devices yet. Click <strong>+ Add Device</strong> to get started.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PANEL 2: CONTACTS -->
+    <!-- ============================================================ -->
+    <section id="panel-contacts" class="tab-panel" role="tabpanel" aria-labelledby="tab-contacts">
+        <div class="card">
+            <div class="card-header">
+                <h3>Contact Manager</h3>
+                <button class="btn btn-ai" id="btn-ai-generate-all-names">AI Generate All Names</button>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
+                Manage contacts for each device. Type names manually or use AI to generate them.
+            </p>
+            <div id="contacts-list"></div>
+            <div id="contacts-empty" class="empty-state">
+                <p>Add devices first, then manage contacts here.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PANEL 3: PERSONALITIES -->
+    <!-- ============================================================ -->
+    <section id="panel-personalities" class="tab-panel" role="tabpanel" aria-labelledby="tab-personalities">
+        <div class="card">
+            <div class="card-header">
+                <h3>Personality Editor</h3>
+                <button class="btn btn-ai" id="btn-ai-generate-all-personalities">AI Generate All</button>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
+                Expand each contact to edit their personality profile, or let AI generate it.
+            </p>
+            <div id="personalities-list"></div>
+            <div id="personalities-empty" class="empty-state">
+                <p>Add devices and contacts first.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PANEL: STORY ARC -->
+    <!-- ============================================================ -->
+    <section id="panel-storyarc" class="tab-panel" role="tabpanel" aria-labelledby="tab-storyarc">
+        <div class="card" style="border-left:3px solid var(--orange);">
+            <div class="card-header">
+                <h3>Scenario Premise</h3>
+                <button class="btn btn-ai" id="btn-ai-generate-story-arc">AI Generate Story Arc</button>
+            </div>
+            <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">
+                The "answer key" for the scenario. Who did it? What's the conspiracy? What's the twist?
+                Every event and conversation will reference this to stay coherent.
+            </p>
+            <div class="form-group">
+                <label for="story-arc-global">Global Story Arc (the overarching narrative — plot, key reveals, resolution)</label>
+                <textarea id="story-arc-global" rows="6" placeholder="e.g. Marcus is secretly embezzling from the company. Elena discovers discrepancies in Q2. By August, she confronts him privately. He tries to cover it up through September, but Javier finds the offshore account in October..."></textarea>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+            <div class="card-header">
+                <h3>Character Arcs</h3>
+                <button class="btn btn-ai btn-sm" id="btn-ai-generate-character-arcs">AI Fill All Arcs</button>
+            </div>
+            <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">
+                Each person's narrative trajectory. The phone owner might be the villain, the victim, or just a bystander.
+                Contacts each have their own story too.
+            </p>
+            <div id="character-arcs-list"></div>
+            <div id="character-arcs-empty" class="empty-state">
+                <p>Add devices and contacts first, then define their story arcs.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PANEL 4: EVENTS & LINKS (combined) -->
+    <!-- ============================================================ -->
+    <section id="panel-eventslinks" class="tab-panel" role="tabpanel" aria-labelledby="tab-eventslinks">
+
+        <!-- Link Chart -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Link Chart</h3>
+                <span style="font-size:11px;color:var(--text-muted);">Click a node to inspect &middot; Right-click for actions</span>
+            </div>
+            <div class="link-chart-legend" id="link-chart-legend"></div>
+            <div id="link-chart-container"></div>
+            <!-- Node inspector (shown on click) -->
+            <div id="node-inspector" class="hidden"></div>
+        </div>
+
+        <!-- Right-click context menu (hidden by default) -->
+        <div id="node-context-menu" class="context-menu hidden"></div>
+
+        <!-- AI Suggest Events modal -->
+        <div id="ai-events-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="ai-events-modal-title" aria-describedby="ai-events-modal-desc">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h3 id="ai-events-modal-title">AI Suggest Events</h3>
+                    <button class="btn btn-danger btn-icon btn-sm" id="btn-close-events-modal">&times;</button>
+                </div>
+                <p id="ai-events-modal-desc" style="color:var(--text-secondary);font-size:13px;margin-bottom:14px;">
+                    Configure the timeline window and how many events to generate.
+                    The <strong id="modal-theme-label">theme</strong> will shape the kind of events created.
+                </p>
+                <div class="row" style="gap:12px;margin-bottom:12px;">
+                    <div class="form-group" style="flex:1;">
+                        <label for="modal-ev-start">Start Date</label>
+                        <input type="date" id="modal-ev-start">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="modal-ev-end">End Date</label>
+                        <input type="date" id="modal-ev-end">
+                    </div>
+                    <div class="form-group" style="flex:0 0 100px;">
+                        <label for="modal-ev-count">Event Count</label>
+                        <input type="number" id="modal-ev-count" value="6" min="1" max="20">
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:8px;">
+                    <button class="btn" id="btn-cancel-events-modal">Cancel</button>
+                    <button class="btn btn-ai" id="btn-confirm-ai-suggest-events">Generate Events</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events section -->
+        <div class="card" style="margin-top:16px;">
+            <div class="card-header">
+                <h3>Timeline Events</h3>
+                <div>
+                    <button class="btn btn-ai" id="btn-ai-suggest-events">AI Suggest Events</button>
+                    <button class="btn btn-primary" id="btn-add-event">+ Add Event</button>
+                </div>
+            </div>
+            <div class="timeline-container">
+                <div class="timeline-bar" id="timeline-bar"></div>
+            </div>
+            <div class="event-list" id="events-list"></div>
+            <div id="events-empty" class="empty-state">
+                <p>No timeline events. Click <strong>AI Suggest Events</strong> or <strong>+ Add Event</strong>. Right-click chart nodes to add people to events.</p>
+            </div>
+        </div>
+
+        <!-- Group Chats section -->
+        <div class="card" style="margin-top:16px;">
+            <div class="card-header">
+                <h3>Group Chats</h3>
+                <div>
+                    <button class="btn btn-ai" id="btn-ai-suggest-group-chats">AI Suggest Groups</button>
+                    <button class="btn btn-primary" id="btn-add-group-chat">+ Add Group Chat</button>
+                </div>
+            </div>
+            <div id="group-chats-list"></div>
+            <div id="group-chats-empty" class="empty-state">
+                <p>No group chats. Groups emerge from events — when characters meet and become friends they might start a group chat.</p>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PANEL 6: GENERATE -->
+    <!-- ============================================================ -->
+    <section id="panel-generate" class="tab-panel" role="tabpanel" aria-labelledby="tab-generate">
+        <div class="card">
+            <div class="card-header">
+                <h3>Scenario Summary</h3>
+            </div>
+            <div class="summary-grid" id="summary-grid"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Generation Settings</h3>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label for="gen-date-start">Start Date</label>
+                    <input type="date" id="gen-date-start" value="2025-01-01">
+                </div>
+                <div class="form-group">
+                    <label for="gen-date-end">End Date</label>
+                    <input type="date" id="gen-date-end" value="2025-12-31">
+                </div>
+                <div class="form-group">
+                    <label for="gen-msg-min">Messages/Day Min</label>
+                    <input type="number" id="gen-msg-min" value="2" min="0" max="50">
+                </div>
+                <div class="form-group">
+                    <label for="gen-msg-max">Messages/Day Max</label>
+                    <input type="number" id="gen-msg-max" value="8" min="1" max="50">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label for="gen-batch-size">Batch Size</label>
+                    <input type="number" id="gen-batch-size" value="25" min="5" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="gen-provider">LLM Provider</label>
+                    <select id="gen-provider">
+                        <option value="openai">OpenAI (GPT-4o)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="gen-temperature">Temperature</label>
+                    <input type="number" id="gen-temperature" value="0.9" min="0" max="2" step="0.1">
+                </div>
+            </div>
+            <div id="gen-cost-estimate" class="cost-estimate hidden">
+                <span class="cost-icon" aria-hidden="true">$</span>
+                <span id="cost-estimate-text">Estimated: ~0 API calls</span>
+            </div>
+            <div class="row">
+                <div class="form-group" style="display:flex;align-items:flex-end;gap:8px;">
+                    <button class="btn btn-success" id="gen-run-btn" style="flex:1;" aria-busy="false">
+                        Generate Dataset
+                    </button>
+                    <button class="btn btn-ai hidden" id="gen-resume-btn" style="flex:1;">
+                        Resume
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group" style="display:flex;align-items:flex-end;gap:8px;">
+                    <button class="btn btn-ai" id="gen-quality-fix-btn" style="flex:1;">
+                        AI Quality Fix
+                    </button>
+                </div>
+            </div>
+            <div id="gen-progress-info" class="hidden"></div>
+        </div>
+
+        <div class="progress-container hidden" id="progress-container">
+            <h3 style="margin-bottom: 8px;">Generation Progress</h3>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
+            <div class="progress-log" id="progress-log" role="log" aria-live="polite" aria-label="Generation progress log"></div>
+        </div>
+    </section>
+    </main>
+
+    <!-- AI Generate Story Arc modal (top-level so it's visible from any tab) -->
+    <div id="ai-storyarc-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="ai-storyarc-modal-title" aria-describedby="ai-storyarc-modal-desc">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="ai-storyarc-modal-title">AI Generate Story Arc</h3>
+                <button class="btn btn-danger btn-icon btn-sm" id="btn-close-storyarc-modal">&times;</button>
+            </div>
+            <p id="ai-storyarc-modal-desc" style="color:var(--text-secondary);font-size:13px;margin-bottom:14px;">
+                Set the timeline span and complexity. A
+                <strong id="modal-arc-theme-label">theme</strong> story arc will be generated
+                and used to drive events, personalities, and conversations.
+            </p>
+            <div class="row" style="gap:12px;margin-bottom:12px;">
+                <div class="form-group" style="flex:1;">
+                    <label for="modal-arc-preset">Timeline Preset</label>
+                    <select id="modal-arc-preset">
+                        <option value="custom">Custom dates</option>
+                        <option value="1">1 month</option>
+                        <option value="3">3 months</option>
+                        <option value="6" selected>6 months</option>
+                        <option value="12">1 year</option>
+                        <option value="24">2 years</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label for="modal-arc-start">Start Date</label>
+                    <input type="date" id="modal-arc-start">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label for="modal-arc-end">End Date</label>
+                    <input type="date" id="modal-arc-end">
+                </div>
+            </div>
+            <div class="row" style="gap:12px;margin-bottom:12px;">
+                <div class="form-group" style="flex:0 0 160px;">
+                    <label for="modal-arc-events">Suggested Events</label>
+                    <input type="number" id="modal-arc-events" value="6" min="1" max="30">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label style="font-size:12px;color:var(--text-muted);">
+                        The story arc will reference this many key plot beats.
+                        Events &amp; Links will use the same timeline.
+                    </label>
+                </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;">
+                <button class="btn" id="btn-cancel-storyarc-modal">Cancel</button>
+                <button class="btn btn-ai" id="btn-confirm-ai-generate-storyarc">Generate Story Arc</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="module" src="/static/dist/app.js?v={{ cache_bust }}"></script>
+</body>
+</html>

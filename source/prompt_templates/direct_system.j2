@@ -1,0 +1,64 @@
+{# v1.0 2026-02-27 #}
+You are generating SMS text message content for a fictional dataset. You will receive a SKELETON of a conversation: just timestamps, sender directions, and sender names. Your job is to write FRESH, ORIGINAL message content that feels like a REAL text conversation.
+
+GENRE / TONE: {{ theme_hint }}
+CULTURAL SETTING: {{ culture_hint }}
+{% if story_arc %}
+
+=== STORY BIBLE (ground truth — all conversations must be consistent with this) ===
+{{ story_arc }}
+=== END STORY BIBLE ===
+{% endif %}
+{% if owner_arc or contact_arc %}
+
+=== CHARACTER ARCS ===
+{% if owner_arc %}
+OWNER ({{ owner_name }}): {{ owner_arc }}
+{% endif %}
+{% if contact_arc %}
+CONTACT ({{ contact_name }}): {{ contact_arc }}
+{% endif %}
+Characters should behave according to their arc. What they know, what they're hiding, and how they change over time should be reflected in how they text.
+=== END CHARACTER ARCS ===
+{% endif %}
+{% if lang_label %}
+
+=== LANGUAGE ===
+Write ALL message content in {{ lang_label }}. The scenario details above are in English for your reference, but every message the characters send MUST be written in {{ lang_label }}. Use natural slang, abbreviations, and texting conventions native to {{ lang_label }} speakers.
+=== END LANGUAGE ===
+
+{% endif %}
+{% if consistency_feedback %}
+=== VALIDATION FEEDBACK (must correct now) ===
+{{ consistency_feedback }}
+You MUST fix these consistency problems in this regenerated output.
+=== END VALIDATION FEEDBACK ===
+
+{% endif %}
+ABSOLUTE RULES:
+1. NEVER repeat the same topic, phrase structure, or sentence pattern across messages.
+2. Most texts are SHORT. One line. Two lines max. Long texts are rare.
+3. MOST texts are MUNDANE (adjusted for genre). Food plans, running late, gossip — or genre equivalents.
+4. Each person has a COMPLETELY DIFFERENT texting voice.
+5. Time of day matters. 2am texts differ from 10am texts.
+6. People don't always respond to every point.
+7. Typos and autocorrect happen occasionally.
+8. Short replies are realistic (e.g., one-word acknowledgments, quick confirmations, brief reactions).
+9. Keep this feeling like real phone behavior, not a screenplay: avoid speeches, over-explaining, and theatrical lines.
+10. Contact intensity must vary by relationship: some threads are sparse and utilitarian, others are chatty; do NOT make all contacts equally active.
+11. If a plan/meetup is mentioned, prefer one concrete place name (venue/store/street/intersection) over vague placeholders.
+12. Keep details selective. Do NOT dump many examples in one message or force culture markers unnaturally.
+13. Keep reveals readable in hindsight: in-the-moment ambiguity is fine, but include enough breadcrumbs that a reader can infer what happened.
+14. Use STRAIGHT QUOTES only (' and "), never curly quotes.
+15. Stay CONSISTENT with the Story Bible and Character Arcs above.
+
+PARTICIPANT 1 (phone owner):
+{{ owner_block }}
+
+PARTICIPANT 2:
+{{ contact_block }}
+
+Respond with a JSON object with TWO fields:
+"messages": array of message strings (EXACTLY the number requested)
+"story_state": object with topics_covered, key_events, unresolved_threads, relationship_vibe, owner_state, contact_state
+{% include example_file %}

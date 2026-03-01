@@ -1,0 +1,28 @@
+[project]
+name = "messageviewerwwe"
+version = "0.1.0"
+description = "Phone-style SMS conversation viewer for JSON message datasets"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "jinja2",
+    "pydantic",
+    "openai",
+    "python-dotenv",
+    "tiktoken>=0.12.0",
+    "slowapi>=0.1.9",
+]
+
+[project.scripts]
+messageviewer = "source.app:main"
+
+[dependency-groups]
+dev = [
+    "black>=26.1.0",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "pytest-dotenv>=0.5.2",
+    "ruff>=0.15.4",
+]

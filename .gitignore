@@ -20,8 +20,16 @@ source/static/dist/
 
 # Cursor / editor local state
 .cursor/
+.cursorignore
 cursor-settings/
 cursor-settings.7z
+
+# IDE tooling configs (local-only)
+.prettierrc
+eslint.config.mjs
+knip.json
+vitest.config.ts
+CONTRIBUTING.md
 
 # IDE
 .vscode/
